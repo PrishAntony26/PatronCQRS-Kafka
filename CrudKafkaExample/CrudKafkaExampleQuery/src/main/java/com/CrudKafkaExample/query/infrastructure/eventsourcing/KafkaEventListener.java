@@ -7,10 +7,13 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.stereotype.Component;
 
 @Component
+@EnableKafka
 public class KafkaEventListener {
 
     //Logger
@@ -41,6 +44,13 @@ public class KafkaEventListener {
         logger.info("Mensaje recibido 3er evento..!");
         Book book = new Gson().fromJson(stringStringConsumerRecord.value(), Book.class);
         bookRepository.delete(book);
+    }
+
+    @KafkaListener(topicPartitions = @TopicPartition( topic = "multiTopic", partitions = {"0"}), groupId = "group1", containerFactory = "consumerCreate")
+    public void listenSavePartition(ConsumerRecord<String, String> stringStringConsumerRecord){
+        logger.info("Mensaje recibido 4to evento..!");
+        Book book = new Gson().fromJson(stringStringConsumerRecord.value(), Book.class);
+        bookRepository.save(book);
     }
 
 
