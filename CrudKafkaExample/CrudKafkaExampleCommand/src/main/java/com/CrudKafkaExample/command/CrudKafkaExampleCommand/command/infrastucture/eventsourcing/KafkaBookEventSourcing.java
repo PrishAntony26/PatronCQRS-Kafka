@@ -14,8 +14,13 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class KafkaBookEventSourcing {
 
-    @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Autowired
+    public KafkaBookEventSourcing(KafkaTemplate<String, String> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
+
 
     @Value(value = "${message.topic.crud.create}")
     private String topicNameCreate;

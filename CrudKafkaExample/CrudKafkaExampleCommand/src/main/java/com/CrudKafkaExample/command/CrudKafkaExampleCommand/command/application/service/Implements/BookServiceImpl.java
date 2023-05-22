@@ -1,6 +1,7 @@
 package com.CrudKafkaExample.command.CrudKafkaExampleCommand.command.application.service.Implements;
 
 import com.CrudKafkaExample.command.CrudKafkaExampleCommand.command.domain.dto.CreateBookRequest;
+import com.CrudKafkaExample.command.CrudKafkaExampleCommand.command.infrastucture.eventsourcing.KafkaBookEventSourcingOneTopic;
 import com.CrudKafkaExample.command.CrudKafkaExampleCommand.command.infrastucture.repository.BookRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.CrudKafkaExample.command.CrudKafkaExampleCommand.command.application.service.BookService;
@@ -17,10 +18,16 @@ public class BookServiceImpl implements BookService {
 
     private final KafkaBookEventSourcing kafkaBookEventSourcing;
 
+    //Implementación de particiones en un topico
+    private final KafkaBookEventSourcingOneTopic kafkaBookEventSourcingOneTopic;
+
     @Autowired
-    public BookServiceImpl(BookRepository bookRepository, KafkaBookEventSourcing kafkaBookEventSourcing){
+    public BookServiceImpl(BookRepository bookRepository,
+                           KafkaBookEventSourcing kafkaBookEventSourcing,
+                           KafkaBookEventSourcingOneTopic kafkaBookEventSourcingOneTopic){
         this.bookRepository = bookRepository;
         this.kafkaBookEventSourcing = kafkaBookEventSourcing;
+        this.kafkaBookEventSourcingOneTopic = kafkaBookEventSourcingOneTopic;
     }
 
     @Override
@@ -29,7 +36,8 @@ public class BookServiceImpl implements BookService {
         bookRepository.save(book);
         //Enviando el mensaje
         try {
-            kafkaBookEventSourcing.createBookEvent(book);
+            //kafkaBookEventSourcing.createBookEvent(book);
+            kafkaBookEventSourcingOneTopic.sendMessageToPartition(book);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
