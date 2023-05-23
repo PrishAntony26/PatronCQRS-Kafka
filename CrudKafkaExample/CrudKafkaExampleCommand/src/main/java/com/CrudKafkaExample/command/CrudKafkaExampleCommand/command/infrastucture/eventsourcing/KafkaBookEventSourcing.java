@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 //Un unico provider sin configuración
 @Component
 @Log4j2
-@Qualifier("OneTemplate")
 public class KafkaBookEventSourcing {
 
     //Creación de los producer sin configuración previa

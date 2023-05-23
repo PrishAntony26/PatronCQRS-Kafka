@@ -37,6 +37,9 @@ public class KafkaProducerCreateConfig {
         return new DefaultKafkaProducerFactory<>(producerConfig);
     }
 
+    /***
+     @Qualifierindica que un bean específico debe conectarse automáticamente cuando hay varios candidatos (Create - update - delete)
+    * */
     @Bean("CreateConfig")
     public KafkaTemplate<String, String> kafkaTemplateCreate(){
         return new KafkaTemplate<>(providerFactory());
