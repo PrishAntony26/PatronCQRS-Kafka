@@ -6,18 +6,23 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.CrudKafkaExample.command.CrudKafkaExampleCommand.command.domain.model.Book;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+//Un unico provider sin configuración
 @Component
 @Log4j2
+@Qualifier("OneTemplate")
 public class KafkaBookEventSourcing {
 
+    //Creación de los producer sin configuración previa
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
-    public KafkaBookEventSourcing(KafkaTemplate<String, String> kafkaTemplate) {
+    public KafkaBookEventSourcing(@Qualifier("CreateConfig") KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 

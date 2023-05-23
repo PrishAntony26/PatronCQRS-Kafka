@@ -46,11 +46,25 @@ public class KafkaEventListener {
         bookRepository.delete(book);
     }
 
-    @KafkaListener(topicPartitions = @TopicPartition( topic = "multiTopic", partitions = {"0"}), groupId = "group1", containerFactory = "consumerCreate")
+    @KafkaListener(topicPartitions = @TopicPartition( topic = "multiTopic", partitions = {"0"}), groupId = "group-idCreate", containerFactory = "consumerCreate")
     public void listenSavePartition(ConsumerRecord<String, String> stringStringConsumerRecord){
         logger.info("Mensaje recibido 4to evento..!");
         Book book = new Gson().fromJson(stringStringConsumerRecord.value(), Book.class);
         bookRepository.save(book);
+    }
+
+    @KafkaListener(topicPartitions = @TopicPartition( topic = "multiTopic", partitions = {"1"}), groupId = "group-idUpdate", containerFactory = "consumerUpdate")
+    public void listenUpdatePartition(ConsumerRecord<String, String> stringStringConsumerRecord){
+        logger.info("Mensaje recibido 5to evento..!");
+        Book book = new Gson().fromJson(stringStringConsumerRecord.value(), Book.class);
+        bookRepository.save(book);
+    }
+
+    @KafkaListener(topicPartitions = @TopicPartition( topic = "multiTopic", partitions = {"2"}), groupId = "group-idDelete", containerFactory = "consumerDelete")
+    public void listenDeletePartition(ConsumerRecord<String, String> stringStringConsumerRecord){
+        logger.info("Mensaje recibido 5to evento..!");
+        Book book = new Gson().fromJson(stringStringConsumerRecord.value(), Book.class);
+        bookRepository.delete(book);
     }
 
 

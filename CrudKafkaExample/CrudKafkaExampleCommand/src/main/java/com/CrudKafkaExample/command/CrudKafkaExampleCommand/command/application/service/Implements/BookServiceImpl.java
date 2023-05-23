@@ -16,17 +16,17 @@ import java.util.Optional;
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
 
-    private final KafkaBookEventSourcing kafkaBookEventSourcing;
+    //private final KafkaBookEventSourcing kafkaBookEventSourcing;
 
     //Implementación de particiones en un topico
     private final KafkaBookEventSourcingOneTopic kafkaBookEventSourcingOneTopic;
 
     @Autowired
     public BookServiceImpl(BookRepository bookRepository,
-                           KafkaBookEventSourcing kafkaBookEventSourcing,
+                           //KafkaBookEventSourcing kafkaBookEventSourcing,
                            KafkaBookEventSourcingOneTopic kafkaBookEventSourcingOneTopic){
         this.bookRepository = bookRepository;
-        this.kafkaBookEventSourcing = kafkaBookEventSourcing;
+        //this.kafkaBookEventSourcing = kafkaBookEventSourcing;
         this.kafkaBookEventSourcingOneTopic = kafkaBookEventSourcingOneTopic;
     }
 
@@ -37,7 +37,7 @@ public class BookServiceImpl implements BookService {
         //Enviando el mensaje
         try {
             //kafkaBookEventSourcing.createBookEvent(book);
-            kafkaBookEventSourcingOneTopic.sendMessageToPartition(book);
+            kafkaBookEventSourcingOneTopic.sendMessageToFirstPartition(book);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -51,7 +51,8 @@ public class BookServiceImpl implements BookService {
         if(exists){
             bookRepository.save(book);
             try {
-                kafkaBookEventSourcing.updateBookEvent(book);
+                //kafkaBookEventSourcing.updateBookEvent(book);
+                kafkaBookEventSourcingOneTopic.sendMessageToSecondPartition(book);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
@@ -64,7 +65,8 @@ public class BookServiceImpl implements BookService {
         if(book.isPresent()){
             bookRepository.delete(book.get());
             try {
-                kafkaBookEventSourcing.deleteBookEvent(book.get());
+                //kafkaBookEventSourcing.deleteBookEvent(book.get());
+                kafkaBookEventSourcingOneTopic.sendMessageToThirdPartition(book.get());
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
